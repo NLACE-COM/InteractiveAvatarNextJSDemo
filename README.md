@@ -29,13 +29,7 @@ NOTE: Make sure you have enter your token into the `.env` file and run `npm run 
 
 To start your 'session' with a Interactive Avatar, first click the 'start' button. If your HeyGen API key is entered into the Server's .env file, then you should see our demo Interactive Avatar appear.
 
-If you want to see a different Avatar or try a different voice, you can close the session and enter the IDs and then 'start' the session again. Please see below for information on where to retrieve different Avatar and voice IDs that you can use.
-
-### Which Avatars can I use with this project?
-
-By default, there are several Public Avatars that can be used in Interactive Avatar. (AKA Interactive Avatars.) You can find the Avatar IDs for these Public Avatars by navigating to [labs.heygen.com/interactive-avatar](https://labs.heygen.com/interactive-avatar) and clicking 'Select Avatar' and copying the avatar id.
-
-You can create your own custom Interactive Avatars at labs.heygen.com/interactive-avatar by clicking 'create interactive avatar' on the top-left of the screen.
+This fork locks the demo to a single avatar, knowledge base and voice. The avatar starts immediately without any configuration UI.
 
 ### Where can I read more about enterprise-level usage of the Interactive Avatar API?
 
