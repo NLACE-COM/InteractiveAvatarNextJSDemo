@@ -23,6 +23,15 @@ Feel free to play around with the existing code and please leave any feedback fo
 
 6. Run `npm run dev`
 
+### Environment variables
+
+Copy `.env.example` to `.env` and fill in your credentials. The demo understands the following keys:
+
+- `HEYGEN_API_KEY` – used by `app/api/get-access-token/route.ts` to request streaming tokens.
+- `NEXT_PUBLIC_BASE_API_URL` – base URL for HeyGen's API (`https://api.heygen.com` by default).
+- `OPENAI_API_KEY` – optional key for sample OpenAI integrations.
+- `NEXT_PUBLIC_OPENAI_API_KEY` – optional client-side key for OpenAI demos.
+
 ### Starting sessions
 
 NOTE: Make sure you have enter your token into the `.env` file and run `npm run dev`.
