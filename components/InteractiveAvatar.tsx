@@ -22,6 +22,12 @@ import { MessageHistory } from "./AvatarSession/MessageHistory";
 
 import { AVATARS } from "@/app/lib/constants";
 
+const devLog = (...args: unknown[]) => {
+  if (process.env.NODE_ENV === "development") {
+    console.log(...args);
+  }
+};
+
 const DEFAULT_CONFIG: StartAvatarRequest = {
   quality: AvatarQuality.Low,
   avatarName: AVATARS[0].avatar_id,
@@ -54,7 +60,7 @@ function InteractiveAvatar() {
       });
       const token = await response.text();
 
-      console.log("Access Token:", token); // Log the token to verify
+      devLog("Access Token:", token); // Log the token to verify
 
       return token;
     } catch (error) {
@@ -69,34 +75,34 @@ function InteractiveAvatar() {
       const avatar = initAvatar(newToken);
 
       avatar.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
-        console.log("Avatar started talking", e);
+        devLog("Avatar started talking", e);
       });
       avatar.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
-        console.log("Avatar stopped talking", e);
+        devLog("Avatar stopped talking", e);
       });
       avatar.on(StreamingEvents.STREAM_DISCONNECTED, () => {
-        console.log("Stream disconnected");
+        devLog("Stream disconnected");
       });
       avatar.on(StreamingEvents.STREAM_READY, (event) => {
-        console.log(">>>>> Stream ready:", event.detail);
+        devLog(">>>>> Stream ready:", event.detail);
       });
       avatar.on(StreamingEvents.USER_START, (event) => {
-        console.log(">>>>> User started talking:", event);
+        devLog(">>>>> User started talking:", event);
       });
       avatar.on(StreamingEvents.USER_STOP, (event) => {
-        console.log(">>>>> User stopped talking:", event);
+        devLog(">>>>> User stopped talking:", event);
       });
       avatar.on(StreamingEvents.USER_END_MESSAGE, (event) => {
-        console.log(">>>>> User end message:", event);
+        devLog(">>>>> User end message:", event);
       });
       avatar.on(StreamingEvents.USER_TALKING_MESSAGE, (event) => {
-        console.log(">>>>> User talking message:", event);
+        devLog(">>>>> User talking message:", event);
       });
       avatar.on(StreamingEvents.AVATAR_TALKING_MESSAGE, (event) => {
-        console.log(">>>>> Avatar talking message:", event);
+        devLog(">>>>> Avatar talking message:", event);
       });
       avatar.on(StreamingEvents.AVATAR_END_MESSAGE, (event) => {
-        console.log(">>>>> Avatar end message:", event);
+        devLog(">>>>> Avatar end message:", event);
       });
 
       await startAvatar(config);
