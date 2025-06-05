@@ -3,7 +3,7 @@ import StreamingAvatar, {
   StreamingTalkingMessageEvent,
   UserTalkingMessageEvent,
 } from "@heygen/streaming-avatar";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export enum StreamingAvatarSessionState {
   INACTIVE = "inactive",
@@ -25,6 +25,9 @@ export interface Message {
 type StreamingAvatarContextProps = {
   avatarRef: React.MutableRefObject<StreamingAvatar | null>;
   basePath?: string;
+
+  sessionId: string | null;
+  setSessionId: (id: string | null) => void;
 
   isMuted: boolean;
   setIsMuted: (isMuted: boolean) => void;
@@ -50,7 +53,7 @@ type StreamingAvatarContextProps = {
   }: {
     detail: StreamingTalkingMessageEvent;
   }) => void;
-  handleEndMessage: () => void;
+  handleEndMessage: () => Promise<void>;
 
   isListening: boolean;
   setIsListening: (isListening: boolean) => void;
@@ -66,6 +69,9 @@ type StreamingAvatarContextProps = {
 const StreamingAvatarContext = React.createContext<StreamingAvatarContextProps>(
   {
     avatarRef: { current: null },
+    basePath: undefined,
+    sessionId: null,
+    setSessionId: () => {},
     isMuted: true,
     setIsMuted: () => {},
     isVoiceChatLoading: false,
@@ -80,7 +86,7 @@ const StreamingAvatarContext = React.createContext<StreamingAvatarContextProps>(
     clearMessages: () => {},
     handleUserTalkingMessage: () => {},
     handleStreamingTalkingMessage: () => {},
-    handleEndMessage: () => {},
+    handleEndMessage: async () => {},
     isListening: false,
     setIsListening: () => {},
     isUserTalking: false,
@@ -121,7 +127,9 @@ const useStreamingAvatarVoiceChatState = () => {
   };
 };
 
-const useStreamingAvatarMessageState = () => {
+const useStreamingAvatarMessageState = (
+  sessionIdRef: React.MutableRefObject<string | null>,
+) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const currentSenderRef = useRef<MessageSender | null>(null);
 
@@ -177,7 +185,27 @@ const useStreamingAvatarMessageState = () => {
     }
   };
 
-  const handleEndMessage = () => {
+  const handleEndMessage = async () => {
+    if (
+      currentSenderRef.current === MessageSender.CLIENT &&
+      sessionIdRef.current
+    ) {
+      const last = messages[messages.length - 1];
+      if (last) {
+        try {
+          await fetch('/api/save-message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: sessionIdRef.current,
+              content: last.content,
+            }),
+          });
+        } catch (err) {
+          console.error('Failed to save message', err);
+        }
+      }
+    }
     currentSenderRef.current = null;
   };
 
@@ -229,7 +257,12 @@ export const StreamingAvatarProvider = ({
   const avatarRef = React.useRef<StreamingAvatar>(null);
   const voiceChatState = useStreamingAvatarVoiceChatState();
   const sessionState = useStreamingAvatarSessionState();
-  const messageState = useStreamingAvatarMessageState();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
+  const messageState = useStreamingAvatarMessageState(sessionIdRef);
   const listeningState = useStreamingAvatarListeningState();
   const talkingState = useStreamingAvatarTalkingState();
   const connectionQualityState = useStreamingAvatarConnectionQualityState();
@@ -239,6 +272,8 @@ export const StreamingAvatarProvider = ({
       value={{
         avatarRef,
         basePath,
+        sessionId,
+        setSessionId,
         ...voiceChatState,
         ...sessionState,
         ...messageState,

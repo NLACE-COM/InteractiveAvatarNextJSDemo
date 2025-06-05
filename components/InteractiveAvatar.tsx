@@ -16,13 +16,22 @@ import { AvatarVideo } from "./AvatarSession/AvatarVideo";
 import { useStreamingAvatarSession } from "./logic/useStreamingAvatarSession";
 import { AvatarControls } from "./AvatarSession/AvatarControls";
 import { useVoiceChat } from "./logic/useVoiceChat";
-import { StreamingAvatarProvider, StreamingAvatarSessionState } from "./logic";
+import {
+  StreamingAvatarProvider,
+  StreamingAvatarSessionState,
+  useStreamingAvatarContext,
+} from "./logic";
 import { LoadingIcon } from "./Icons";
 import { MessageHistory } from "./AvatarSession/MessageHistory";
 
 import { AVATARS } from "@/app/lib/constants";
 
-const DEFAULT_CONFIG: StartAvatarRequest = {
+interface AvatarSessionConfig extends StartAvatarRequest {
+  userName: string;
+  userEmail: string;
+}
+
+const DEFAULT_CONFIG: AvatarSessionConfig = {
   quality: AvatarQuality.Low,
   avatarName: AVATARS[0].avatar_id,
   knowledgeId: undefined,
@@ -36,14 +45,17 @@ const DEFAULT_CONFIG: StartAvatarRequest = {
   sttSettings: {
     provider: STTProvider.DEEPGRAM,
   },
+  userName: "",
+  userEmail: "",
 };
 
 function InteractiveAvatar() {
   const { initAvatar, startAvatar, stopAvatar, sessionState, stream } =
     useStreamingAvatarSession();
   const { startVoiceChat } = useVoiceChat();
+  const { setSessionId } = useStreamingAvatarContext();
 
-  const [config, setConfig] = useState<StartAvatarRequest>(DEFAULT_CONFIG);
+  const [config, setConfig] = useState<AvatarSessionConfig>(DEFAULT_CONFIG);
 
   const mediaStream = useRef<HTMLVideoElement>(null);
 
@@ -65,6 +77,18 @@ function InteractiveAvatar() {
 
   const startSessionV2 = useMemoizedFn(async (isVoiceChat: boolean) => {
     try {
+      const sessionRes = await fetch('/api/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: config.userName,
+          email: config.userEmail,
+          language: config.language,
+        }),
+      });
+      const { sessionId } = await sessionRes.json();
+      setSessionId(sessionId);
+
       const newToken = await fetchAccessToken();
       const avatar = initAvatar(newToken);
 
