@@ -1,3 +1,9 @@
+const devLog = (...args: unknown[]) => {
+  if (process.env.NODE_ENV === "development") {
+    console.log(...args);
+  }
+};
+
 const HEYGEN_API_KEY = process.env.HEYGEN_API_KEY;
 
 export async function POST() {
@@ -14,7 +20,7 @@ export async function POST() {
       },
     });
 
-    console.log("Response:", res);
+    devLog("Response:", res);
 
     const data = await res.json();
 
