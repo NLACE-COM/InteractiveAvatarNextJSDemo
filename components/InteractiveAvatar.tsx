@@ -11,7 +11,6 @@ import { useEffect, useRef, useState } from "react";
 import { useMemoizedFn, useUnmount } from "ahooks";
 
 import { Button } from "./Button";
-import { AvatarConfig } from "./AvatarConfig";
 import { AvatarVideo } from "./AvatarSession/AvatarVideo";
 import { useStreamingAvatarSession } from "./logic/useStreamingAvatarSession";
 import { AvatarControls } from "./AvatarSession/AvatarControls";
@@ -20,7 +19,8 @@ import { StreamingAvatarProvider, StreamingAvatarSessionState } from "./logic";
 import { LoadingIcon } from "./Icons";
 import { MessageHistory } from "./AvatarSession/MessageHistory";
 
-import { AVATARS } from "@/app/lib/constants";
+import { AVATARS, LANGUAGES } from "@/app/lib/constants";
+import { Select } from "./Select";
 
 const DEFAULT_CONFIG: StartAvatarRequest = {
   quality: AvatarQuality.Low,
@@ -43,7 +43,7 @@ function InteractiveAvatar() {
     useStreamingAvatarSession();
   const { startVoiceChat } = useVoiceChat();
 
-  const [config, setConfig] = useState<StartAvatarRequest>(DEFAULT_CONFIG);
+  const [language, setLanguage] = useState<string>("en");
 
   const mediaStream = useRef<HTMLVideoElement>(null);
 
@@ -99,7 +99,7 @@ function InteractiveAvatar() {
         console.log(">>>>> Avatar end message:", event);
       });
 
-      await startAvatar(config);
+      await startAvatar({ ...DEFAULT_CONFIG, language });
 
       if (isVoiceChat) {
         await startVoiceChat();
@@ -126,24 +126,31 @@ function InteractiveAvatar() {
     <div className="w-full flex flex-col gap-4">
       <div className="flex flex-col rounded-xl bg-zinc-900 overflow-hidden">
         <div className="relative w-full aspect-video overflow-hidden flex flex-col items-center justify-center">
-          {sessionState !== StreamingAvatarSessionState.INACTIVE ? (
+          {sessionState !== StreamingAvatarSessionState.INACTIVE && (
             <AvatarVideo ref={mediaStream} />
-          ) : (
-            <AvatarConfig config={config} onConfigChange={setConfig} />
           )}
         </div>
         <div className="flex flex-col gap-3 items-center justify-center p-4 border-t border-zinc-700 w-full">
           {sessionState === StreamingAvatarSessionState.CONNECTED ? (
             <AvatarControls />
           ) : sessionState === StreamingAvatarSessionState.INACTIVE ? (
-            <div className="flex flex-row gap-4">
-              <Button onClick={() => startSessionV2(true)}>
-                Start Voice Chat
-              </Button>
-              <Button onClick={() => startSessionV2(false)}>
-                Start Text Chat
-              </Button>
-            </div>
+            <>
+              <Select
+                options={LANGUAGES}
+                renderOption={(option) => option}
+                onSelect={(option) => setLanguage(option)}
+                isSelected={(option) => option === language}
+                value={language}
+              />
+              <div className="flex flex-row gap-4">
+                <Button onClick={() => startSessionV2(true)}>
+                  Start Voice Chat
+                </Button>
+                <Button onClick={() => startSessionV2(false)}>
+                  Start Text Chat
+                </Button>
+              </div>
+            </>
           ) : (
             <LoadingIcon />
           )}
