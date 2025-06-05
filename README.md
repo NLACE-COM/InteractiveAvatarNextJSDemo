@@ -21,7 +21,9 @@ Feel free to play around with the existing code and please leave any feedback fo
 
 5. (Optional) If you would like to use the OpenAI features, enter your OpenAI Api Key in the `.env` file.
 
-6. Run `npm run dev`
+6. Add your Supabase credentials to `.env` as `SUPABASE_URL` and either `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_ANON_KEY`.
+
+7. Run `npm run dev`
 
 ### Starting sessions
 

@@ -15,18 +15,23 @@ import { Field } from "./Field";
 
 import { AVATARS, STT_LANGUAGE_LIST } from "@/app/lib/constants";
 
+interface AvatarConfigValues extends StartAvatarRequest {
+  userName: string;
+  userEmail: string;
+}
+
 interface AvatarConfigProps {
-  onConfigChange: (config: StartAvatarRequest) => void;
-  config: StartAvatarRequest;
+  onConfigChange: (config: AvatarConfigValues) => void;
+  config: AvatarConfigValues;
 }
 
 export const AvatarConfig: React.FC<AvatarConfigProps> = ({
   onConfigChange,
   config,
 }) => {
-  const onChange = <T extends keyof StartAvatarRequest>(
+  const onChange = <T extends keyof AvatarConfigValues>(
     key: T,
-    value: StartAvatarRequest[T],
+    value: AvatarConfigValues[T],
   ) => {
     onConfigChange({ ...config, [key]: value });
   };
@@ -96,6 +101,20 @@ export const AvatarConfig: React.FC<AvatarConfigProps> = ({
           />
         </Field>
       )}
+      <Field label="Name">
+        <Input
+          placeholder="Enter your name"
+          value={config.userName}
+          onChange={(value) => onChange("userName", value)}
+        />
+      </Field>
+      <Field label="Email">
+        <Input
+          placeholder="Enter your email"
+          value={config.userEmail}
+          onChange={(value) => onChange("userEmail", value)}
+        />
+      </Field>
       <Field label="Language">
         <Select
           isSelected={(option) => option.value === config.language}
