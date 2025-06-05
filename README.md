@@ -17,11 +17,20 @@ Feel free to play around with the existing code and please leave any feedback fo
 
 4. Enter your HeyGen Enterprise API Token in the `.env` file. Replace `HEYGEN_API_KEY` with your API key. This will allow the Client app to generate secure Access Tokens with which to create interactive sessions.
 
-   You can retrieve either the API Key by logging in to HeyGen and navigating to this page in your settings: [https://app.heygen.com/settings?from=&nav=Subscriptions%20%26%20API]. 
+   You can retrieve either the API Key by logging in to HeyGen and navigating to this page in your settings: [https://app.heygen.com/settings?from=&nav=Subscriptions%20%26%20API].
 
-5. (Optional) If you would like to use the OpenAI features, enter your OpenAI Api Key in the `.env` file.
+5. Add a Supabase key to the `.env` file. Either of the following placeholders will work depending on your project's permission requirements:
 
-6. Run `npm run dev`
+   ```
+   SUPABASE_SERVICE_ROLE_KEY=""
+   SUPABASE_ANON_KEY=""
+   ```
+
+   The application will use whichever key you provide.
+
+6. (Optional) If you would like to use the OpenAI features, enter your OpenAI Api Key in the `.env` file.
+
+7. Run `npm run dev`
 
 ### Starting sessions
 
