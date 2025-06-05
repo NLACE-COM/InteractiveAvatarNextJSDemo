@@ -1,3 +1,6 @@
+import connect from "@/lib/db";
+import Token from "@/models/Token";
+
 const HEYGEN_API_KEY = process.env.HEYGEN_API_KEY;
 
 export async function POST() {
@@ -17,6 +20,9 @@ export async function POST() {
     console.log("Response:", res);
 
     const data = await res.json();
+
+    await connect();
+    await Token.create({ token: data.data.token });
 
     return new Response(data.data.token, {
       status: 200,
