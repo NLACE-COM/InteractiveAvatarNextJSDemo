@@ -29,6 +29,9 @@ NOTE: Make sure you have enter your token into the `.env` file and run `npm run 
 
 To start your 'session' with a Interactive Avatar, first click the 'start' button. If your HeyGen API key is entered into the Server's .env file, then you should see our demo Interactive Avatar appear.
 
+This demo is locked to a single avatar, knowledge base and voice. You can
+choose the conversation language before starting the session.
+
 If you want to see a different Avatar or try a different voice, you can close the session and enter the IDs and then 'start' the session again. Please see below for information on where to retrieve different Avatar and voice IDs that you can use.
 
 ### Which Avatars can I use with this project?

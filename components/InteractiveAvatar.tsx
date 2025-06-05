@@ -19,8 +19,11 @@ import { useVoiceChat } from "./logic/useVoiceChat";
 import { StreamingAvatarProvider, StreamingAvatarSessionState } from "./logic";
 import { LoadingIcon } from "./Icons";
 import { MessageHistory } from "./AvatarSession/MessageHistory";
+import { Select } from "./Select";
 
 import { AVATARS } from "@/app/lib/constants";
+
+const SUPPORTED_LANGUAGES = ["en", "es", "fr"];
 
 const DEFAULT_CONFIG: StartAvatarRequest = {
   quality: AvatarQuality.Low,
@@ -44,6 +47,7 @@ function InteractiveAvatar() {
   const { startVoiceChat } = useVoiceChat();
 
   const [config, setConfig] = useState<StartAvatarRequest>(DEFAULT_CONFIG);
+  const [language, setLanguage] = useState<string>("en");
 
   const mediaStream = useRef<HTMLVideoElement>(null);
 
@@ -99,7 +103,7 @@ function InteractiveAvatar() {
         console.log(">>>>> Avatar end message:", event);
       });
 
-      await startAvatar(config);
+      await startAvatar({ ...DEFAULT_CONFIG, language });
 
       if (isVoiceChat) {
         await startVoiceChat();
@@ -136,13 +140,23 @@ function InteractiveAvatar() {
           {sessionState === StreamingAvatarSessionState.CONNECTED ? (
             <AvatarControls />
           ) : sessionState === StreamingAvatarSessionState.INACTIVE ? (
-            <div className="flex flex-row gap-4">
-              <Button onClick={() => startSessionV2(true)}>
-                Start Voice Chat
-              </Button>
-              <Button onClick={() => startSessionV2(false)}>
-                Start Text Chat
-              </Button>
+            <div className="flex flex-col items-center gap-4">
+              <Select
+                isSelected={(option) => option === language}
+                options={SUPPORTED_LANGUAGES}
+                placeholder="Select language"
+                renderOption={(option) => option}
+                value={language}
+                onSelect={(option) => setLanguage(option)}
+              />
+              <div className="flex flex-row gap-4">
+                <Button onClick={() => startSessionV2(true)}>
+                  Start Voice Chat
+                </Button>
+                <Button onClick={() => startSessionV2(false)}>
+                  Start Text Chat
+                </Button>
+              </div>
             </div>
           ) : (
             <LoadingIcon />
